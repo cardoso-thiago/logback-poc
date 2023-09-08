@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <springProfile name="json-logging">
+        <springProperty name = "applicationName" source= "application.name"/>
+        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+                <providers>
+                    <provider class="br.com.cardoso.provider.CustomProvider">
+                        <fieldName>custom_fixed</fieldName>
+                    </provider>
+                    <provider class="br.com.cardoso.provider.CustomProvider">
+                        <fieldName>custom_random</fieldName>
+                        <strategy>random</strategy>
+                    </provider>
+                    <timestamp>
+                        <fieldName>_time</fieldName>
+                        <pattern>dd/MM/yyyy HH:mm:ss.SSS</pattern>
+                    </timestamp>
+                    <message>
+                        <fieldName>mensagem</fieldName>
+                    </message>
+                    <logLevel/>
+                    <loggerName>
+                        <fieldName>classe</fieldName>
+                    </loggerName>
+                    <pattern>
+                        <omitEmptyFields>true</omitEmptyFields>
+                        <pattern>
+                            {
+                            "application": "${applicationName:-UNDEFINED_APPLICATION_NAME}"
+                            }
+                        </pattern>
+                        <omitEmptyFields>true</omitEmptyFields>
+                    </pattern>
+                </providers>
+            </encoder>
+        </appender>
+    </springProfile>
+    <springProfile name="!json-logging">
+        <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+    </springProfile>
+    <root level="info">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+</configuration>

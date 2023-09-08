@@ -1,0 +1,6 @@
+= Logback, customização de campos e formatação em JSON
+
+- Uso da dependência: https://github.com/logfellow/logstash-logback-encoder
+- Criação de um JsonProvider customizado
+- Uso de variáveis de ambiente do Spring
+- Customização do layout de acordo com o profile do Spring
