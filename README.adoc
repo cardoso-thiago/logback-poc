@@ -4,3 +4,25 @@
 - Criação de um JsonProvider customizado
 - Uso de variáveis de ambiente do Spring
 - Customização do layout de acordo com o profile do Spring
+- Habilitar pretty print com profile do Spring
+- Ofuscação de dados sensíveis com configuração via Environment (simplificado)
+
+== Uso
+
+=== Logar no formato padrão
+
+Para isso, basta informar o profile: `default-format`
+Por exemplo, com variável de VM: `-Dspring.profiles.active=default-format`
+Para informar mais de um profile, basta passar os outros profiles separados por vírgulas: `-Dspring.profiles.active=default-format,dev`
+
+=== Habilitar Pretty Print Json
+
+Para isso, basta informar o profile: `pretty-print-json`
+Por exemplo, com variável de VM: `-Dspring.profiles.active=pretty-print-json`
+Para informar mais de um profile, basta passar os outros profiles separados por vírgulas: `-Dspring.profiles.active=pretty-print-json,dev`
+
+=== Ofuscação de dados sensíveis
+
+Para isso, basta informar as propriedades no `application.properties`, onde:
+- `config.path.to.mask`: O caminho do log que será ofuscado. Permite também valores absolutos e wild card. Exemplos: `cliente/cpf`, `cpf`, `*/cpf`
+- `config.mask`: O valor que será usado como substituição do campo ofuscado. Exemplos: `XXX`, `***`
