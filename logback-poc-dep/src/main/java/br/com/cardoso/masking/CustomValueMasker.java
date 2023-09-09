@@ -1,18 +1,16 @@
 package br.com.cardoso.masking;
 
-import br.com.cardoso.context.SpringEnvironmentContext;
+import br.com.cardoso.context.SpringMaskConfigContext;
 import com.fasterxml.jackson.core.JsonStreamContext;
 import net.logstash.logback.mask.ValueMasker;
-import org.springframework.core.env.Environment;
+
+import java.util.Map;
 
 public class CustomValueMasker implements ValueMasker {
 
     public static final String TOKEN_SEPARATOR = "/";
     public static final String WILDCARD_TOKEN = "*";
-
-    private boolean isAbsolutePath;
-    private String[] tokens;
-    private Object mask;
+    private Map<String, ConfigMask> maskConfigMap;
 
     private boolean currentLeafMatches(JsonStreamContext context, String leafName) {
         if (context != null) {
@@ -35,38 +33,45 @@ public class CustomValueMasker implements ValueMasker {
 
     @Override
     public Object mask(JsonStreamContext context, Object value) {
-        if (getEnvironment() != null && tokens != null) {
-            JsonStreamContext currentContext = context;
-            for (int i = tokens.length; --i >= 0; currentContext = currentContext.getParent()) {
-                if (!currentLeafMatches(currentContext, tokens[i])) {
-                    return null;
+        populateContext();
+        if (maskConfigMap != null && maskConfigMap.size() > 0) {
+            for (String key : maskConfigMap.keySet()) {
+                for (String configMaskValue : maskConfigMap.get(key).configMask()) {
+                    if (shouldMask(context, configMaskValue)) {
+                        return maskConfigMap.get(key).mask(value);
+                    }
                 }
             }
-            return (currentContext != null && (!isAbsolutePath || currentContext.inRoot())) ? mask : null;
         }
         return null;
     }
 
-    private Environment getEnvironment() {
-        Environment environment = SpringEnvironmentContext.getEnvironment();
-        if (environment != null) {
-            if (tokens == null) {
-                String pathToMask = environment.getProperty("config.path.to.mask");
-                if (pathToMask != null) {
-                    isAbsolutePath = pathToMask.startsWith(TOKEN_SEPARATOR);
+    private boolean shouldMask(JsonStreamContext context, String pathToMask) {
+        if (pathToMask != null) {
+            boolean isAbsolutePath = pathToMask.startsWith(TOKEN_SEPARATOR);
 
-                    if (isAbsolutePath) {
-                        pathToMask = pathToMask.substring(TOKEN_SEPARATOR.length());
-                    }
-                    tokens = pathToMask.split(TOKEN_SEPARATOR);
+            if (isAbsolutePath) {
+                pathToMask = pathToMask.substring(TOKEN_SEPARATOR.length());
+            }
+            String[] tokens = pathToMask.split(TOKEN_SEPARATOR);
 
-                    for (int i = 0; i < tokens.length; i++) {
-                        tokens[i] = unescapeJsonPointerToken(tokens[i]);
-                    }
-                    this.mask = getEnvironment().getProperty("config.mask");
+            for (int i = 0; i < tokens.length; i++) {
+                tokens[i] = unescapeJsonPointerToken(tokens[i]);
+            }
+            JsonStreamContext currentContext = context;
+            for (int i = tokens.length; --i >= 0; currentContext = currentContext.getParent()) {
+                if (!currentLeafMatches(currentContext, tokens[i])) {
+                    return false;
                 }
             }
+            return currentContext != null && (!isAbsolutePath || currentContext.inRoot());
         }
-        return environment;
+        return false;
+    }
+
+    private void populateContext() {
+        if (maskConfigMap == null) {
+            maskConfigMap = SpringMaskConfigContext.getMaskConfig();
+        }
     }
 }

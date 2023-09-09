@@ -1,15 +1,12 @@
 package br.com.cardoso
 
-import br.com.cardoso.configuration.LogConfiguration
 import br.com.cardoso.model.Cliente
 import net.logstash.logback.argument.StructuredArguments
 import org.slf4j.LoggerFactory
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
-import org.springframework.context.annotation.Import
 
 @SpringBootApplication
-@Import(LogConfiguration::class)
 class LogbackPocAppApplication
 
 fun main(args: Array<String>) {
@@ -20,8 +17,9 @@ fun main(args: Array<String>) {
     logger.debug("Log de debug")
     logger.info("Log info com structured arguments", StructuredArguments.keyValue("name", "value"))
     logger.error(
-        "Log error com structured arguments e objeto complexo",
-        StructuredArguments.keyValue("cliente", Cliente("Thiago", "333.333.333-33"))
+        "Log error com structured arguments e objeto complexo", StructuredArguments.keyValue(
+            "cliente", Cliente("Thiago", "333.333.333-33", "11.111.111/0001-01", "Rua dos Bobos, 0")
+        )
     )
     try {
         throw Exception("Erro qualquer")

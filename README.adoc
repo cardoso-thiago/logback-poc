@@ -5,7 +5,7 @@
 - Uso de variáveis de ambiente do Spring
 - Customização do layout de acordo com o profile do Spring
 - Habilitar pretty print com profile do Spring
-- Ofuscação de dados sensíveis com configuração via Environment (simplificado)
+- Ofuscação de dados sensíveis com configuração via Environment
 
 == Uso
 
@@ -29,5 +29,46 @@ Para informar mais de um profile, basta passar os outros profiles separados por 
 
 Para isso, basta informar as propriedades no `application.properties`, onde:
 
-- `config.path.to.mask`: O caminho do log que será ofuscado. Permite também valores absolutos e wild card. Exemplos: `cliente/cpf`, `cpf`, `*/cpf`
-- `config.mask`: O valor que será usado como substituição do campo ofuscado. Exemplos: `XXX`, `***`
+- `config.mask.cpf`: Os caminhos do log onde será aplicada a máscara de CPF, separados por vírgulas. Permite também valores absolutos e uso de wild card. Exemplo: `cliente/cpf,cpf,*/cpf`
+- `config.mask.cnpj`: Os caminhos do log onde será aplicada a máscara de CPF, separados por vírgulas. Permite também valores absolutos e uso de wild card. Exemplo: `cliente/cnpj,cnpj,*/cnpj`
+- `config.mask.hidden`: Os caminhos do log onde será aplicada a ofuscação do valor, separados por vírgulas. Permite também valores absolutos e uso de wild card. Exemplo: `cliente/endereco,endereco,*/endereco`
+
+==== Criando o próprio mecanismo de `masking`
+
+É possível criar um mecanismo do lado da aplicação. O jeito mais simples é criar uma classe que estenda da classe `BaseMask`. Exemplo:
+
+[source,java]
+----
+public class MyCustomMask extends BaseMask {
+
+    public MyCustomMask(Environment environment) {
+        super(environment);
+    }
+
+    @Override
+    public String getType() {
+        return "custom";
+    }
+
+    @Override
+    public Object mask(Object value) {
+        return "XoX";
+    }
+}
+----
+
+Com essa implementação será necessário adicionar na aplicação uma chave `config.mask.custom` onde `custom` corresponde ao `type` da classe de implementação.
+
+Será necessário também criar um bean dessa implementação:
+
+[source,java]
+----
+@Bean
+public MyCustomMask myCustomMask(Environment environment) {
+    return new MyCustomMask(environment);
+}
+----
+
+Com isso, todos os `paths` configurados na chave `config.mask.custom` serão substituídos por `XoX`. O valor recebido por parâmetro é o valor original, o valor retornado é o valor desejado após a transformação.
+
+
