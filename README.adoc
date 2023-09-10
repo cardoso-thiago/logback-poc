@@ -74,5 +74,5 @@ Com isso, todos os `paths` configurados na chave `config.mask.custom` serão sub
 
 === Log AOP
 
-É disponibilizada uma anotação que pode ser inserida a nível de método e classe: `@LogAop`.
-No momento, a anotação apenas gera o log com as informações padrões, capturando a classe de origem para inserção do log e utilizando `Markers` para acrescentar um atributo `method` com o nome do método de origem.
+É disponibilizada uma anotação que pode ser inserida a nível de método ou classe: `@LogAop`.
+No momento, a anotação apenas gera o log com as informações padrões, capturando a classe de origem para inserção do log e utilizando `Markers` para acrescentar um atributo `method` com o nome do método de origem, um atributo `execution_time` com o tempo da execução do método em ms e em caso de exception, adiciona a seção de erro no log.
