@@ -22,6 +22,7 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'br.com.cardoso:logback-poc-dep:0.0.2-SNAPSHOT'
+    implementation 'br.com.cardoso:logback-poc-aop-dep:0.0.2-SNAPSHOT'
     implementation 'org.jetbrains.kotlin:kotlin-reflect'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }

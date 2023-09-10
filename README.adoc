@@ -6,6 +6,7 @@
 - Customização do layout de acordo com o profile do Spring
 - Habilitar pretty print com profile do Spring
 - Ofuscação de dados sensíveis com configuração via Environment
+- Implementação simples de LogAOP em dependência apartada e opcional
 
 == Uso
 
@@ -71,4 +72,7 @@ public MyCustomMask myCustomMask(Environment environment) {
 
 Com isso, todos os `paths` configurados na chave `config.mask.custom` serão substituídos por `XoX`. O valor recebido por parâmetro é o valor original, o valor retornado é o valor desejado após a transformação.
 
+=== Log AOP
 
+É disponibilizada uma anotação que pode ser inserida a nível de método e classe: `@LogAop`.
+No momento, a anotação apenas gera o log com as informações padrões, capturando a classe de origem para inserção do log e utilizando `Markers` para acrescentar um atributo `method` com o nome do método de origem.

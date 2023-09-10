@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+    <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
     <springProfile name="!default-format">
         <springProperty name="applicationName" source="application.name"/>
@@ -12,6 +13,7 @@
                     <decorator class="net.logstash.logback.mask.MaskingJsonGeneratorDecorator">
                         <valueMasker class="br.com.cardoso.masking.CustomValueMasker"/>
                     </decorator>
+                    <decorator class="br.com.cardoso.decorator.OmitEmptyFieldJsonDecorator"/>
                 </jsonGeneratorDecorator>
                 <providers>
                     <provider class="br.com.cardoso.provider.CustomProvider">
@@ -30,6 +32,7 @@
                     </message>
                     <arguments/>
                     <logstashMarkers/>
+                    <mdc/>
                     <nestedField>
                         <fieldName>error</fieldName>
                         <providers>
@@ -49,7 +52,6 @@
                         <fieldName>classe</fieldName>
                     </loggerName>
                     <pattern>
-                        <omitEmptyFields>true</omitEmptyFields>
                         <pattern>
                             {
                             "application": "${applicationName:-UNDEFINED_APPLICATION_NAME}"
