@@ -72,6 +72,16 @@ public MyCustomMask myCustomMask(Environment environment) {
 
 Com isso, todos os `paths` configurados na chave `config.mask.custom` serão substituídos por `XoX`. O valor recebido por parâmetro é o valor original, o valor retornado é o valor desejado após a transformação.
 
+==== Habilitando dados da origem do log
+
+Para isso, basta informar a propriedade `include.caller.data` com o valor `true` (desabilitado por padrão). A partir de então, os logs passarão a contar com uma seção `log_origin` com os atributos:
+- `class`: A classe e origem do log
+- `method`: O método de origem do log
+- `file`: O nome do arquivo de origem do log
+- `line`: A linha de origem do log no arquivo
+
+Extrair essa informação pode ser pesado, por esse motivo é desabilitado por padrão. Deve ser habilitado em ambientes simples e/ou apenas para auxiliar na identificação de problemas, pois pode impactar no desempenho da aplicação.
+
 === Log AOP
 
 É disponibilizada uma anotação que pode ser inserida a nível de método ou classe: `@LogAop`.

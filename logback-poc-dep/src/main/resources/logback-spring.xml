@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
+    <statusListener class="ch.qos.logback.core.status.NopStatusListener"/>
+    <springProperty name="includeCallerData" source="include.caller.data"/>
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
     <springProfile name="!default-format">
         <springProperty name="applicationName" source="application.name"/>
+        <springProperty name="parentVersion" source="parent.version"/>
+
         <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
             <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+                <includeCallerData>${includeCallerData:-false}</includeCallerData>
                 <jsonGeneratorDecorator class="net.logstash.logback.decorate.CompositeJsonGeneratorDecorator">
                     <springProfile name="pretty-print-json">
                         <decorator class="net.logstash.logback.decorate.PrettyPrintingJsonGeneratorDecorator"/>
@@ -16,41 +20,10 @@
                     <decorator class="br.com.cardoso.decorator.OmitEmptyFieldJsonDecorator"/>
                 </jsonGeneratorDecorator>
                 <providers>
-                    <provider class="br.com.cardoso.provider.CustomProvider">
-                        <fieldName>custom_fixed</fieldName>
-                    </provider>
-                    <provider class="br.com.cardoso.provider.CustomProvider">
-                        <fieldName>custom_random</fieldName>
-                        <strategy>random</strategy>
-                    </provider>
                     <timestamp>
                         <fieldName>_time</fieldName>
                         <pattern>dd/MM/yyyy HH:mm:ss.SSS</pattern>
                     </timestamp>
-                    <message>
-                        <fieldName>mensagem</fieldName>
-                    </message>
-                    <arguments/>
-                    <logstashMarkers/>
-                    <mdc/>
-                    <nestedField>
-                        <fieldName>error</fieldName>
-                        <providers>
-                            <throwableClassName>
-                                <fieldName>classe</fieldName>
-                            </throwableClassName>
-                            <throwableMessage>
-                                <fieldName>message</fieldName>
-                            </throwableMessage>
-                            <stackTrace>
-                                <fieldName>stackTrace</fieldName>
-                            </stackTrace>
-                        </providers>
-                    </nestedField>
-                    <logLevel/>
-                    <loggerName>
-                        <fieldName>classe</fieldName>
-                    </loggerName>
                     <pattern>
                         <pattern>
                             {
@@ -58,6 +31,69 @@
                             }
                         </pattern>
                     </pattern>
+                    <message>
+                        <fieldName>message</fieldName>
+                    </message>
+                    <arguments/>
+                    <logstashMarkers/>
+                    <keyValuePairs/>
+                    <mdc/>
+                    <nestedField>
+                        <fieldName>log_origin</fieldName>
+                        <providers>
+                            <callerData>
+                                <classFieldName>class</classFieldName>
+                                <methodFieldName>method</methodFieldName>
+                                <fileFieldName>file</fileFieldName>
+                                <lineFieldName>line</lineFieldName>
+                            </callerData>
+                        </providers>
+                    </nestedField>
+                    <nestedField>
+                        <fieldName>error</fieldName>
+                        <providers>
+                            <throwableClassName>
+                                <fieldName>class</fieldName>
+                            </throwableClassName>
+                            <throwableMessage>
+                                <fieldName>message</fieldName>
+                            </throwableMessage>
+                            <stackTrace>
+                                <fieldName>stackTrace</fieldName>
+                            </stackTrace>
+                            <rootStackTraceElement>
+                                <fieldName>rootStackTrace</fieldName>
+                                <classFieldName>class</classFieldName>
+                                <methodFieldName>method</methodFieldName>
+                            </rootStackTraceElement>
+                            <throwableRootCauseClassName>
+                                <fieldName>root_cause_class</fieldName>
+                            </throwableRootCauseClassName>
+                            <throwableRootCauseMessage>
+                                <fieldName>root_cause_message</fieldName>
+                            </throwableRootCauseMessage>
+                        </providers>
+                    </nestedField>
+                    <logLevel/>
+                    <loggerName>
+                        <fieldName>logger_name</fieldName>
+                    </loggerName>
+                    <threadName/>
+                    <provider class="br.com.cardoso.provider.CustomProvider">
+                        <fieldName>custom_fixed</fieldName>
+                    </provider>
+                    <provider class="br.com.cardoso.provider.CustomProvider">
+                        <fieldName>custom_random</fieldName>
+                        <strategy>random</strategy>
+                    </provider>
+                    <pattern>
+                        <pattern>
+                            {
+                            "parent_version": "${parentVersion:-}"
+                            }
+                        </pattern>
+                    </pattern>
+                    <tags/>
                 </providers>
             </encoder>
         </appender>
@@ -67,6 +103,7 @@
     </springProfile>
 
     <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+        <includeCallerData>${includeCallerData:-false}</includeCallerData>
         <appender-ref ref="CONSOLE"/>
     </appender>
 
