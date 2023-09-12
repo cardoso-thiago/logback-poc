@@ -6,7 +6,11 @@ import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,13 +37,24 @@ public class LogAspect {
     }
 
     private static void autoLog(ProceedingJoinPoint joinPoint, long startTime, Exception ex) {
+        Map<String, String> info = new HashMap<>();
+
+        AnnotationAttributes requestAnnotationAttributes = AnnotatedElementUtils.getMergedAnnotationAttributes(
+                ((MethodSignature) joinPoint.getSignature()).getMethod(),
+                RequestMapping.class
+        );
+        if (requestAnnotationAttributes != null) {
+            String uri = String.join(",", (String[]) requestAnnotationAttributes.get("value"));
+            info.put("uri", uri);
+        }
         long endTime = System.currentTimeMillis();
         long executionTime = endTime - startTime;
+        info.put("execution_time", executionTime + "ms");
+
         Signature signature = joinPoint.getSignature();
         String method = signature.getName();
-        Map<String, String> info = new HashMap<>();
         info.put("method", method);
-        info.put("execution_time", executionTime + "ms");
+
         if (ex == null) {
             LoggerFactory.getLogger(signature.getDeclaringType()).info(Markers.appendEntries(info), "");
         } else {

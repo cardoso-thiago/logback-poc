@@ -2,6 +2,7 @@ package br.com.cardoso.controller
 
 import br.com.cardoso.annotation.LogAop
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RestController
 import java.lang.Exception
 
@@ -18,5 +19,11 @@ class TestController2 {
     @GetMapping("/test4")
     fun test4MethodAnnotation(): String {
         throw Exception("Erro na execução do test4")
+    }
+
+    @LogAop
+    @PostMapping("/test5/post/longer/path")
+    fun test5PostLongerPath(): String {
+        throw Exception("Erro na execução do test5")
     }
 }
