@@ -37,7 +37,11 @@ public class LogAspect {
     }
 
     private static void autoLog(ProceedingJoinPoint joinPoint, long startTime, Exception ex) {
+        long endTime = System.currentTimeMillis();
+        long executionTime = endTime - startTime;
+
         Map<String, String> info = new HashMap<>();
+        info.put("execution_time", executionTime + "ms");
 
         AnnotationAttributes requestAnnotationAttributes = AnnotatedElementUtils.getMergedAnnotationAttributes(
                 ((MethodSignature) joinPoint.getSignature()).getMethod(),
@@ -47,9 +51,6 @@ public class LogAspect {
             String uri = String.join(",", (String[]) requestAnnotationAttributes.get("value"));
             info.put("uri", uri);
         }
-        long endTime = System.currentTimeMillis();
-        long executionTime = endTime - startTime;
-        info.put("execution_time", executionTime + "ms");
 
         Signature signature = joinPoint.getSignature();
         String method = signature.getName();
