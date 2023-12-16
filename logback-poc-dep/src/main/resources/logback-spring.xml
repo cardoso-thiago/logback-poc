@@ -14,10 +14,10 @@
                     <springProfile name="pretty-print-json">
                         <decorator class="net.logstash.logback.decorate.PrettyPrintingJsonGeneratorDecorator"/>
                     </springProfile>
+                    <decorator class="br.com.cardoso.decorator.OmitEmptyFieldJsonDecorator"/>
                     <decorator class="net.logstash.logback.mask.MaskingJsonGeneratorDecorator">
                         <valueMasker class="br.com.cardoso.masking.CustomValueMasker"/>
                     </decorator>
-                    <decorator class="br.com.cardoso.decorator.OmitEmptyFieldJsonDecorator"/>
                 </jsonGeneratorDecorator>
                 <providers>
                     <timestamp>

@@ -4,6 +4,7 @@ import br.com.cardoso.context.SpringMaskConfigContext;
 import br.com.cardoso.masking.impl.CnpjMask;
 import br.com.cardoso.masking.impl.CpfMask;
 import br.com.cardoso.masking.impl.HiddenMask;
+import br.com.cardoso.masking.impl.OmitMask;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -25,6 +26,12 @@ public class LogConfiguration {
     public HiddenMask hiddenMask(Environment environment) {
         return new HiddenMask(environment);
     }
+
+    @Bean
+    public OmitMask omitMask(Environment environment) {
+        return new OmitMask(environment);
+    }
+
 
     @Bean
     public SpringMaskConfigContext springMaskConfigContext() {
