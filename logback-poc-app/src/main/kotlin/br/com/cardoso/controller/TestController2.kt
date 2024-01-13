@@ -1,8 +1,11 @@
 package br.com.cardoso.controller
 
 import br.com.cardoso.annotation.LogAop
+import org.springframework.http.HttpMethod.GET
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestMethod
 import org.springframework.web.bind.annotation.RestController
 import java.lang.Exception
 
@@ -10,7 +13,7 @@ import java.lang.Exception
 class TestController2 {
 
     @LogAop
-    @GetMapping("/test3")
+    @RequestMapping(method = [RequestMethod.GET], path = ["/test3"])
     fun test3MethodAnnotation(): String {
         return "OK"
     }
