@@ -34,7 +34,7 @@ public class CustomValueMasker implements ValueMasker {
     @Override
     public Object mask(JsonStreamContext context, Object value) {
         populateContext();
-        if (maskConfigMap != null && maskConfigMap.size() > 0) {
+        if (maskConfigMap != null && !maskConfigMap.isEmpty()) {
             for (String key : maskConfigMap.keySet()) {
                 for (String configMaskValue : maskConfigMap.get(key).configMask()) {
                     if (shouldMask(context, configMaskValue)) {
